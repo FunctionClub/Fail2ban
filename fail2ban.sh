@@ -1,3 +1,9 @@
+#Functions
+function CheckIfRoot(){
+[ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
+}
+
+function CheckOS(){
 if [ -n "$(grep 'Aliyun Linux release' /etc/issue)" -o -e /etc/redhat-release ]; then
   OS=CentOS
   [ -n "$(grep ' 7\.' /etc/redhat-release)" ] && CentOS_RHEL_version=7
@@ -37,44 +43,84 @@ else
   echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
   kill -9 $$
 fi
+}
 
 
-
-#Install 
-if [ "$OS"='CentOS' ]; then
+function Install(){
+if [ ${OS}='CentOS' ]; then
   yum -y install epel-release
   yum -y install fail2ban
-  elif [[ "${OS}" =~ ^Ubuntu$|^Debian$ ]]; then
-    apt-get -y install fail2ban
-  fi
+else
+  apt-get -y update
+  apt-get -y install fail2ban
+fi
+}
 
-#Config
-echo [DEFAULT] >>/etc/fail2ban/jail.local
-echo ignoreip = 127.0.0.1 >>/etc/fail2ban/jail.local
-echo bantime = 86400 >>/etc/fail2ban/jail.local
-echo maxretry = 3  >>/etc/fail2ban/jail.local
-echo findtime = 1800  >>/etc/fail2ban/jail.local
 
-echo [ssh-iptables] >>/etc/fail2ban/jail.local
-echo enabled = true >>/etc/fail2ban/jail.local
-echo filter = sshd >>/etc/fail2ban/jail.local
-echo action = iptables[name=SSH, port=ssh, protocol=tcp] >>/etc/fail2ban/jail.local
-echo logpath = /var/log/secure >>/etc/fail2ban/jail.local
-echo maxretry = 2 >>/etc/fail2ban/jail.local
-echo findtime = 3600 >>/etc/fail2ban/jail.local
-echo bantime = 2592000 >>/etc/fail2ban/jail.local
 
-#start
-if [ "$OS"='CentOS' ]; then
-	if [ "$CentOS_RHEL_version" = '7' ]; then
+function Configure(){
+if [ ${OS}='CentOS' ]; then
+cat <<EOF >> /etc/fail2ban/jail.local
+[DEFAULT]
+ignoreip = 127.0.0.1
+bantime = 86400
+maxretry = 3
+findtime = 1800
+
+[ssh-iptables]
+enabled = true
+filter = sshd
+action = iptables[name=SSH, port=$ssh_port, protocol=tcp]
+logpath = /var/log/secure
+maxretry = 2
+findtime = 3600
+bantime = 2592000
+EOF
+else
+cat <<EOF >> /etc/fail2ban/jail.local
+[DEFAULT]
+ignoreip = 127.0.0.1
+bantime = 86400
+maxretry = 3
+findtime = 1800
+
+[ssh-iptables]
+enabled = true
+filter = sshd
+action = iptables[name=SSH, port=$ssh_port, protocol=tcp]
+logpath = /var/log/auth.log
+maxretry = 2
+findtime = 3600
+bantime = 2592000
+EOF
+fi
+}
+
+
+function Start(){
+if [ ${OS}='CentOS' ]; then
+	if [ ${CentOS_RHEL_version} = '7' ]; then
 		systemctl restart fail2ban
 		systemctl enable fail2ban
 	else
-		service restart fail2ban
+		service fail2ban restart
 		chkconfig fail2ban on
 	fi
 fi
 
-if [[ "${OS}" =~ ^Ubuntu$|^Debian$ ]]; then
-	service restart fail2ban
+if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
+  service restart fail2ban
 fi
+}
+
+function ReadSSHPort(){
+[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
+}
+
+#Main
+CheckIfRoot
+ReadSSHPort
+CheckOS
+Install
+Configure
+Start
