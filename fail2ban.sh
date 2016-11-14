@@ -66,19 +66,15 @@ echo bantime = 2592000 >>/etc/fail2ban/jail.local
 
 #start
 if [ "$OS"='CentOS' ]; then
-  if [ "$CentOS_RHEL_version" = '5' ]; then
-    service restart fail2ban
-    chkconfig fail2ban on
-      elif [ "$CentOS_RHEL_version" = '6' ]; then
-         service restart fail2ban
-         chkconfig fail2ban on
-          if [ "$CentOS_RHEL_version" = '7' ]; then
-            systemctl restart fail2ban
-            systemctl enable fail2ban
-          fi
-      fi
-  fi
+	if [ "$CentOS_RHEL_version" = '7' ]; then
+		systemctl restart fail2ban
+		systemctl enable fail2ban
+	else
+		service restart fail2ban
+		chkconfig fail2ban on
+	fi
 fi
+
 if [[ "${OS}" =~ ^Ubuntu$|^Debian$ ]]; then
-      service restart fail2ban
+	service restart fail2ban
 fi
