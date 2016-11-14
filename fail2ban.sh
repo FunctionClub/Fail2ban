@@ -84,6 +84,12 @@ ssh_port=$SSH_PORT
 
 	read -p "Please the maximun times for trying [2-10]:  " maxretry
 read -p "Please the lasting time for blocking a IP [hours]:  " bantime
+if [ ${maxretry} == '' ]; then
+	maxretry=3
+fi
+if [ ${bantime} == '' ];then
+	bantime=24
+fi
 ((bantime=$bantime*60*60))
 #Install
 if [ ${OS} == CentOS ]; then
@@ -154,7 +160,7 @@ echo "Finish Installing ! Rebot the sshd now !"
 
 if [ ${OS} == CentOS ]; then
   if [ ${CentOS_RHEL_version} == 7 ]; then
-    systemctl restart ssh
+    systemctl restart sshd
   else
     service ssh restart
   fi
