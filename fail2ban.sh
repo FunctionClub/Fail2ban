@@ -47,16 +47,19 @@ else
 fi
 
 #Install
-if [ ${OS}='CentOS' ]; then
+if [ ${OS} == CentOS ]; then
   yum -y install epel-release
   yum -y install fail2ban
-else
+fi
+
+if [ ${OS} == Ubuntu ] || [ ${OS} == Debian ];then
   apt-get -y update
   apt-get -y install fail2ban
 fi
 
 #Configure
-if [ ${OS}='CentOS' ]; then
+touch /etc/fail2ban/jail.local
+if [ ${OS} == CentOS ]; then
 cat <<EOF >> /etc/fail2ban/jail.local
 [DEFAULT]
 ignoreip = 127.0.0.1
@@ -93,8 +96,8 @@ EOF
 fi
 
 #Start
-if [ ${OS}='CentOS' ]; then
-  if [ ${CentOS_RHEL_version} = '7' ]; then
+if [ ${OS} == CentOS ]; then
+  if [ ${CentOS_RHEL_version} == 7 ]; then
     systemctl restart fail2ban
     systemctl enable fail2ban
   else
@@ -104,5 +107,5 @@ if [ ${OS}='CentOS' ]; then
 fi
 
 if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
-  service restart fail2ban
+  service fail2ban restart
 fi
