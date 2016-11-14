@@ -1,3 +1,4 @@
+clear
 #CheckIfRoot
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 
@@ -45,6 +46,41 @@ else
   echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
   kill -9 $$
 fi
+
+
+#Read Imformation From The User
+echo "Welcome to Fail2ban!"
+echo "This Shell Script can protect your server from SSH attacks with the help of Fail2ban and iptables"
+echo "More Information can be obtained from our QQ Group : 277717865"
+echo ""
+while :; do echo
+  read -p "Do you want to change your SSH Port? [y/n]: " IfChangeSSHPort
+  if [ ${IfChangeSSHPort} == 'y' ]; then
+    if [ -e "/etc/ssh/sshd_config" ];then
+    [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
+    while :; do echo
+        read -p "Please input SSH port(Default: $ssh_port): " SSH_PORT
+        [ -z "$SSH_PORT" ] && SSH_PORT=$ssh_port
+        if [ $SSH_PORT -eq 22 >/dev/null 2>&1 -o $SSH_PORT -gt 1024 >/dev/null 2>&1 -a $SSH_PORT -lt 65535 >/dev/null 2>&1 ];then
+            break
+        else
+            echo "${CWARNING}input error! Input range: 22,1025~65534${CEND}"
+        fi
+    done
+    if [ -z "`grep ^Port /etc/ssh/sshd_config`" -a "$SSH_PORT" != '22' ];then
+        sed -i "s@^#Port.*@&\nPort $SSH_PORT@" /etc/ssh/sshd_config
+    elif [ -n "`grep ^Port /etc/ssh/sshd_config`" ];then
+        sed -i "s@^Port.*@Port $SSH_PORT@" /etc/ssh/sshd_config
+    fi
+    fi
+    break
+  elif [ ${IfChangeSSHPort} == 'n' ]; then
+    break
+  else
+    echo "${CWARNING}input error! Please only input y or n!${CEND}"
+  fi
+done
+ssh_port=$SSH_PORT
 
 #Install
 if [ ${OS} == CentOS ]; then
@@ -108,4 +144,19 @@ fi
 
 if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
   service fail2ban restart
+fi
+
+#Finish
+echo "Finish Installing ! Rebot the sshd now !"
+
+if [ ${OS} == CentOS ]; then
+  if [ ${CentOS_RHEL_version} == 7 ]; then
+    systemctl restart ssh
+  else
+    service ssh restart
+  fi
+fi
+
+if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
+  service ssh restart
 fi
