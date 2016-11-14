@@ -1,9 +1,11 @@
-#Functions
-function CheckIfRoot(){
+#CheckIfRoot
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
-}
 
-function CheckOS(){
+
+#ReadSSHPort
+[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
+
+#CheckOS
 if [ -n "$(grep 'Aliyun Linux release' /etc/issue)" -o -e /etc/redhat-release ]; then
   OS=CentOS
   [ -n "$(grep ' 7\.' /etc/redhat-release)" ] && CentOS_RHEL_version=7
@@ -43,10 +45,8 @@ else
   echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
   kill -9 $$
 fi
-}
 
-
-function Install(){
+#Install
 if [ ${OS}='CentOS' ]; then
   yum -y install epel-release
   yum -y install fail2ban
@@ -54,11 +54,8 @@ else
   apt-get -y update
   apt-get -y install fail2ban
 fi
-}
 
-
-
-function Configure(){
+#Configure
 if [ ${OS}='CentOS' ]; then
 cat <<EOF >> /etc/fail2ban/jail.local
 [DEFAULT]
@@ -94,33 +91,18 @@ findtime = 3600
 bantime = 2592000
 EOF
 fi
-}
 
-
-function Start(){
+#Start
 if [ ${OS}='CentOS' ]; then
-	if [ ${CentOS_RHEL_version} = '7' ]; then
-		systemctl restart fail2ban
-		systemctl enable fail2ban
-	else
-		service fail2ban restart
-		chkconfig fail2ban on
-	fi
+  if [ ${CentOS_RHEL_version} = '7' ]; then
+    systemctl restart fail2ban
+    systemctl enable fail2ban
+  else
+    service fail2ban restart
+    chkconfig fail2ban on
+  fi
 fi
 
 if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
   service restart fail2ban
 fi
-}
-
-function ReadSSHPort(){
-[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
-}
-
-#Main
-CheckIfRoot
-ReadSSHPort
-CheckOS
-Install
-Configure
-Start
