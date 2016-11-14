@@ -82,6 +82,17 @@ while :; do echo
 done
 ssh_port=$SSH_PORT
 
+while :; do echo
+	read -p "Please the maximun times for trying [2-10]:  " maxretry
+	if [[ ! ${maxretry} =~ ^[2-10]$ ]]; then
+		echo "${CWARNING}input error! Please only input number 2-10${CEND}"
+	else
+		break
+	fi
+
+done
+read -p "Please the lasting time for blocking a IP [minutes]:  " bantime
+bantime=$bantime*60
 #Install
 if [ ${OS} == CentOS ]; then
   yum -y install epel-release
@@ -108,16 +119,16 @@ enabled = true
 filter = sshd
 action = iptables[name=SSH, port=$ssh_port, protocol=tcp]
 logpath = /var/log/secure
-maxretry = 2
+maxretry = $maxretry
 findtime = 3600
-bantime = 2592000
+bantime = $bantime
 EOF
 else
 cat <<EOF >> /etc/fail2ban/jail.local
 [DEFAULT]
 ignoreip = 127.0.0.1
 bantime = 86400
-maxretry = 3
+maxretry = $maxretry
 findtime = 1800
 
 [ssh-iptables]
@@ -125,9 +136,9 @@ enabled = true
 filter = sshd
 action = iptables[name=SSH, port=$ssh_port, protocol=tcp]
 logpath = /var/log/auth.log
-maxretry = 2
+maxretry = $maxretry
 findtime = 3600
-bantime = 2592000
+bantime = $bantime
 EOF
 fi
 
