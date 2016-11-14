@@ -82,17 +82,9 @@ while :; do echo
 done
 ssh_port=$SSH_PORT
 
-while :; do echo
 	read -p "Please the maximun times for trying [2-10]:  " maxretry
-	if [[ ! ${maxretry} =~ ^[2-10]$ ]]; then
-		echo "${CWARNING}input error! Please only input number 2-10${CEND}"
-	else
-		break
-	fi
-
-done
-read -p "Please the lasting time for blocking a IP [minutes]:  " bantime
-bantime=$bantime*60
+read -p "Please the lasting time for blocking a IP [hours]:  " bantime
+((bantime=$bantime*60*60))
 #Install
 if [ ${OS} == CentOS ]; then
   yum -y install epel-release
