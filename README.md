@@ -32,6 +32,7 @@
 
 # 关于 #
 Made by [FunctionClub](http://function.club "FunctionClub")
+QQ群：277717865
 
 # 鸣谢 #
 - [Fail2ban](http://www.fail2ban.org "Fail2ban")
