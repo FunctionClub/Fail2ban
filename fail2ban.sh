@@ -78,14 +78,14 @@ while :; do echo
   elif [ ${IfChangeSSHPort} == 'n' ]; then
     break
   else
-    echo "${CWARNING}input error! Please only input y or n!${CEND}"
+    echo "${CWARNING}Input error! Please only input y or n!${CEND}"
   fi
 done
 ssh_port=$SSH_PORT
 echo ""
-	read -p "Please the maximun times for trying [2-10]:  " maxretry
+	read -p "Input the maximun times for trying [2-10]:  " maxretry
 echo ""
-read -p "Please the lasting time for blocking a IP [hours]:  " bantime
+read -p "Input the lasting time for blocking a IP [hours]:  " bantime
 if [ ${maxretry} == '' ]; then
 	maxretry=3
 fi
