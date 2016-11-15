@@ -11,6 +11,13 @@
 - Ubuntu 16.10 (x86/x64)
 - Debian 7 (x86/x64)
 - Debian 8 (x86/x64)
+# 安装 #
+    wget https://raw.githubusercontent.com/FunctionClub/Fail2ban/master/fail2ban.sh && bash fail2ban.sh 2>&1 | tee fail2ban.log
+1. 第一步选择是否修改SSH端口。
+1. 第二部输入最多尝试输入SSH连接密码的次数
+1. 第三部输入每个恶意IP的封禁时间（单位：小时）
+# 卸载 #
+    wget https://raw.githubusercontent.com/FunctionClub/Fail2ban/master/uninstall.sh && bash uninstall.sh
 # 注意事项 #
 1. 安装完成后请会重启SSH服务，请重新连接SSH会话
 2. 若出现SSH无法连接的情况，请检查是否修改过SSH端口，请填写写改后的正确端口进行连接
