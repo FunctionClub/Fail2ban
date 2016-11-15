@@ -50,9 +50,10 @@ fi
 
 #Read Imformation From The User
 echo "Welcome to Fail2ban!"
+echo "--------------------"
 echo "This Shell Script can protect your server from SSH attacks with the help of Fail2ban and iptables"
-echo "More Information can be obtained from our QQ Group : 277717865"
 echo ""
+
 while :; do echo
   read -p "Do you want to change your SSH Port? [y/n]: " IfChangeSSHPort
   if [ ${IfChangeSSHPort} == 'y' ]; then
@@ -81,8 +82,9 @@ while :; do echo
   fi
 done
 ssh_port=$SSH_PORT
-
+echo ""
 	read -p "Please the maximun times for trying [2-10]:  " maxretry
+echo ""
 read -p "Please the lasting time for blocking a IP [hours]:  " bantime
 if [ ${maxretry} == '' ]; then
 	maxretry=3
@@ -169,3 +171,7 @@ fi
 if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
   service ssh restart
 fi
+echo ""
+echo "More help is available in our QQ Group : 277717865"
+
+echo "Fail2ban is now runing on this server now!"

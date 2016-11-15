@@ -56,3 +56,5 @@ fi
 if [ ${OS} == Ubuntu ] || [ ${OS} == Debian ];then
   apt-get -y remove fail2ban
 fi
+
+rm -rf /etc/fail2ban
