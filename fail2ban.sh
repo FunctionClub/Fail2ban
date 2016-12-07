@@ -46,8 +46,6 @@ else
   echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
   kill -9 $$
 fi
-
-
 #Read Imformation From The User
 echo "Welcome to Fail2ban!"
 echo "--------------------"
@@ -76,6 +74,7 @@ while :; do echo
     fi
     break
   elif [ ${IfChangeSSHPort} == 'n' ]; then
+    ssh_port=22
     break
   else
     echo "${CWARNING}Input error! Please only input y or n!${CEND}"
