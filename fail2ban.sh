@@ -74,7 +74,6 @@ while :; do echo
     fi
     break
   elif [ ${IfChangeSSHPort} == 'n' ]; then
-    ssh_port=22
     break
   else
     echo "${CWARNING}Input error! Please only input y or n!${CEND}"
@@ -116,7 +115,7 @@ findtime = 1800
 [ssh-iptables]
 enabled = true
 filter = sshd
-action = iptables[name=SSH, port=$ssh_port, protocol=tcp]
+action = iptables[name=SSH, port=ssh, protocol=tcp]
 logpath = /var/log/secure
 maxretry = $maxretry
 findtime = 3600
@@ -133,7 +132,7 @@ findtime = 1800
 [ssh-iptables]
 enabled = true
 filter = sshd
-action = iptables[name=SSH, port=$ssh_port, protocol=tcp]
+action = iptables[name=SSH, port=ssh, protocol=tcp]
 logpath = /var/log/auth.log
 maxretry = $maxretry
 findtime = 3600
