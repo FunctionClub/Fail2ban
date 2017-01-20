@@ -103,6 +103,7 @@ if [ ${OS} == Ubuntu ] || [ ${OS} == Debian ];then
 fi
 
 #Configure
+rm -rf /etc/fail2ban/jail.local
 touch /etc/fail2ban/jail.local
 if [ ${OS} == CentOS ]; then
 cat <<EOF >> /etc/fail2ban/jail.local
