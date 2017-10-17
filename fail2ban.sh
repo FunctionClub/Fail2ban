@@ -157,7 +157,7 @@ if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]]; then
 fi
 
 #Finish
-echo "Finish Installing ! Rebot the sshd now !"
+echo "Finish Installing ! Reboot the sshd now !"
 
 if [ ${OS} == CentOS ]; then
   if [ ${CentOS_RHEL_version} == 7 ]; then
